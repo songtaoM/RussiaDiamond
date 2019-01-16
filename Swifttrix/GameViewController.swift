@@ -11,41 +11,53 @@ import SpriteKit
 import GameplayKit
 
 
-class GameViewController: UIViewController {
+class GameViewController: UIViewController, SwiftTrisDelegate {
+
+     var panPointReference:CGPoint?
 
     
     var scene: GameScene!
+    var swiftris:SwiftTris!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-//        if let view = self.view as! SKView? {
-//            // Load the SKScene from 'GameScene.sks'
-//            if let scene = SKScene(fileNamed: "GameScene") {
-//                // Set the scale mode to scale to fit the window
-//                scene.scaleMode = .aspectFill
-//
-//                // Present the scene
-//                view.presentScene(scene)
-//            }
-//
-//            view.ignoresSiblingOrder = true
-//
-//            view.showsFPS = true
-//            view.showsNodeCount = true
-//        }
-        
-        
         if let v = view as! SKView? {
             v.isMultipleTouchEnabled = false
-            scene = GameScene(size: v.bounds.size)
-            scene.scaleMode = .aspectFit
+            scene = GameScene(size: UIScreen.main.bounds.size)
+            scene.scaleMode = .fill
+            scene.tick = didTick
+            
+            swiftris = SwiftTris()
+            swiftris.delegate = self
+            swiftris.beginGame()
             v.presentScene(scene)
         }
-
-        
     }
-
+    
+    @IBAction func tap(_ sender: Any) {
+        swiftris.rotateShape()
+    }
+    
+    @IBAction func didPan(_ sender: UIPanGestureRecognizer) {
+        // #2
+        let currentPoint = sender.translation(in: self.view)
+        if let originalPoint = panPointReference {
+            // #3
+            if abs(currentPoint.x - originalPoint.x) > (blockSize * 0.9) {
+                // #4
+                if sender.velocity(in: self.view).x > CGFloat(0) {
+                    swiftris.moveShapeRight()
+                    panPointReference = currentPoint
+                } else {
+                    swiftris.moveShapeLeft()
+                    panPointReference = currentPoint
+                }
+            }
+        } else if sender.state == .began {
+            panPointReference = currentPoint
+        }
+    }
+    
     override var shouldAutorotate: Bool {
         return true
     }
@@ -60,5 +72,56 @@ class GameViewController: UIViewController {
 
     override var prefersStatusBarHidden: Bool {
         return true
+    }
+    
+    func didTick() {
+        swiftris.letShapeFall()
+    }
+    
+    func nextShape() {
+        let newShapes = swiftris.newShape()
+        guard let fallingShape = newShapes.fallingShape else {
+            return
+        }
+        self.scene.addPreviewShapeToScene(shape: newShapes.nextShape!) {}
+        self.scene.movePreviewShape(shape: fallingShape) {
+            // #16
+            self.view.isUserInteractionEnabled = true
+            self.scene.startTicking()
+        }
+    }
+    
+    func gameDidBegin(swiftTris: SwiftTris) {
+        // The following is false when restarting a new game
+        if swiftris.nextShape != nil && swiftris.nextShape!.blocks[0].sprite == nil {
+            scene.addPreviewShapeToScene(shape: swiftris.nextShape!) {
+                self.nextShape()
+            }
+        } else {
+            nextShape()
+        }
+    }
+    
+    func gameDidEnd(swiftTris: SwiftTris) {
+        view.isUserInteractionEnabled = false
+        scene.stopTicking()
+    }
+    
+    func gameDidLevelUp(swiftTris: SwiftTris) {
+        
+    }
+    
+    func gameShapeDidLand(swiftTris: SwiftTris) {
+        scene.stopTicking()
+        nextShape()
+    }
+    
+    // #17
+    func gameShapeDidMove(swiftTris swiftris: SwiftTris) {
+        scene.redrawShape(shape: swiftris.fallingShape!) {}
+    }
+
+    func gamgeShapeDidDrop(swiftTris: SwiftTris) {
+        
     }
 }

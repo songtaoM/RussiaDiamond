@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13122.16" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BV1-FR-VrT">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BV1-FR-VrT">
+    <device id="retina6_1" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13104.12"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -9,16 +13,72 @@
         <!--Game View Controller-->
         <scene sceneID="tXr-a1-R10">
             <objects>
-                <viewController id="BV1-FR-VrT" customClass="GameViewController" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="BV1-FR-VrT" customClass="GameViewController" customModule="Swifttrix" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" multipleTouchEnabled="YES" contentMode="scaleToFill" id="3se-qz-xqx" customClass="SKView">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <gestureRecognizers/>
                         <viewLayoutGuide key="safeArea" id="4qk-I5-YsI"/>
+                        <connections>
+                            <outletCollection property="gestureRecognizers" destination="5mk-hA-Vss" appends="YES" id="AIh-A4-oxe"/>
+                            <outletCollection property="gestureRecognizers" destination="KOf-qQ-YfL" appends="YES" id="uR2-hZ-DMw"/>
+                        </connections>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="SZV-WD-TEh" sceneMemberID="firstResponder"/>
+                <tapGestureRecognizer id="5mk-hA-Vss">
+                    <connections>
+                        <action selector="tap:" destination="BV1-FR-VrT" id="MZM-M1-ieZ"/>
+                    </connections>
+                </tapGestureRecognizer>
+                <panGestureRecognizer minimumNumberOfTouches="1" id="KOf-qQ-YfL">
+                    <connections>
+                        <action selector="didPan:" destination="BV1-FR-VrT" id="PyH-au-CNg"/>
+                    </connections>
+                </panGestureRecognizer>
             </objects>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="GR9-GS-Du1">
+            <objects>
+                <viewController id="yGJ-rb-e04" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="gn5-1E-9nB">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="AL3-sK-QUa" userLabel="橙色视图">
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="174"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="haA-ul-gdh" userLabel="蓝色视图">
+                                        <rect key="frame" x="0.0" y="44" width="100" height="100"/>
+                                        <color key="backgroundColor" red="0.050980392159999999" green="0.4431372549" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="100" id="h3v-Yw-32z"/>
+                                            <constraint firstAttribute="width" constant="100" id="vti-Yz-Ys1"/>
+                                        </constraints>
+                                    </view>
+                                </subviews>
+                                <color key="backgroundColor" red="1" green="0.57647058819999997" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="bottom" secondItem="haA-ul-gdh" secondAttribute="bottom" constant="30" id="f99-fi-LtL"/>
+                                    <constraint firstItem="haA-ul-gdh" firstAttribute="leading" secondItem="AL3-sK-QUa" secondAttribute="leading" id="fLY-8i-Tic"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="AL3-sK-QUa" firstAttribute="top" secondItem="gn5-1E-9nB" secondAttribute="top" id="5WF-BI-Idl"/>
+                            <constraint firstItem="AL3-sK-QUa" firstAttribute="leading" secondItem="BfX-I9-K1h" secondAttribute="leading" id="F7o-u5-7Hp"/>
+                            <constraint firstItem="BfX-I9-K1h" firstAttribute="trailing" secondItem="AL3-sK-QUa" secondAttribute="trailing" id="v6Q-4Q-59M"/>
+                            <constraint firstItem="haA-ul-gdh" firstAttribute="top" secondItem="BfX-I9-K1h" secondAttribute="top" id="zbW-pe-Tlb"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="BfX-I9-K1h"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="07h-za-FAi" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1098.5507246376812" y="-126.5625"/>
         </scene>
     </scenes>
 </document>
