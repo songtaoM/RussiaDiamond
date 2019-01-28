@@ -11,10 +11,12 @@ import SpriteKit
 import GameplayKit
 
 
-class GameViewController: UIViewController, SwiftTrisDelegate {
+class GameViewController: UIViewController, SwiftTrisDelegate, UIGestureRecognizerDelegate {
 
      var panPointReference:CGPoint?
 
+    @IBOutlet weak var scoreLabel: UILabel!
+    @IBOutlet weak var levelLabel: UILabel!
     
     var scene: GameScene!
     var swiftris:SwiftTris!
@@ -57,6 +59,9 @@ class GameViewController: UIViewController, SwiftTrisDelegate {
             panPointReference = currentPoint
         }
     }
+    @IBAction func didSwipe(_ sender: Any) {
+        swiftris.dropShape()
+    }
     
     override var shouldAutorotate: Bool {
         return true
@@ -92,6 +97,9 @@ class GameViewController: UIViewController, SwiftTrisDelegate {
     }
     
     func gameDidBegin(swiftTris: SwiftTris) {
+        levelLabel.text = "\(swiftris.level)"
+        scoreLabel.text = "\(swiftris.score)"
+        scene.tickLengthMillis = tickLengthLevelOne
         // The following is false when restarting a new game
         if swiftris.nextShape != nil && swiftris.nextShape!.blocks[0].sprite == nil {
             scene.addPreviewShapeToScene(shape: swiftris.nextShape!) {
@@ -105,15 +113,38 @@ class GameViewController: UIViewController, SwiftTrisDelegate {
     func gameDidEnd(swiftTris: SwiftTris) {
         view.isUserInteractionEnabled = false
         scene.stopTicking()
+        
+        scene.playSound(sound: "Sounds/gameover.mp3")
+        scene.animateCollapsingLines(linesToRemove: swiftTris.removeAllBlocks(), fallenBlocks: swiftTris.removeAllBlocks()) {
+            self.swiftris.beginGame()
+        }
     }
     
     func gameDidLevelUp(swiftTris: SwiftTris) {
-        
+        levelLabel.text = "\(swiftris.level)"
+        if scene.tickLengthMillis >= 100 {
+            scene.tickLengthMillis -= 100
+        } else if scene.tickLengthMillis > 50 {
+            scene.tickLengthMillis -= 50
+        }
+        scene.playSound(sound: "Sounds/levelup.mp3")
     }
     
     func gameShapeDidLand(swiftTris: SwiftTris) {
         scene.stopTicking()
-        nextShape()
+        self.view.isUserInteractionEnabled = false
+        // #10
+        let removedLines = swiftris.removeCompletedLines()
+        if removedLines.linesRemoved.count > 0 {
+            self.scoreLabel.text = "\(swiftris.score)"
+            scene.animateCollapsingLines(linesToRemove: removedLines.linesRemoved, fallenBlocks:removedLines.fallenBlocks) {
+                // #11
+                self.gameShapeDidLand(swiftTris: self.swiftris)
+            }
+            scene.playSound(sound: "Sounds/bomb.mp3")
+        } else {
+            nextShape()
+        }
     }
     
     // #17
@@ -121,7 +152,31 @@ class GameViewController: UIViewController, SwiftTrisDelegate {
         scene.redrawShape(shape: swiftris.fallingShape!) {}
     }
 
-    func gamgeShapeDidDrop(swiftTris: SwiftTris) {
-        
+    func gameShapeDidDrop(swiftTris: SwiftTris) {
+        scene.stopTicking()
+        scene.redrawShape(shape: swiftris.fallingShape!) {
+            self.swiftris.letShapeFall()
+        }
+        scene.playSound(sound: "Sounds/drop.mp3")
     }
+}
+
+extension GameViewController {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
+    }
+    
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRequireFailureOf otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        if gestureRecognizer is UISwipeGestureRecognizer {
+            if otherGestureRecognizer is UIPanGestureRecognizer {
+                return true
+            }
+        } else if gestureRecognizer is UIPanGestureRecognizer {
+            if otherGestureRecognizer is UITapGestureRecognizer {
+                return true
+            }
+        }
+        return false
+    }
+    
 }

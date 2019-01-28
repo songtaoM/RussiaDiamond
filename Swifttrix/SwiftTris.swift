@@ -27,7 +27,7 @@ protocol SwiftTrisDelegate {
     func gameDidBegin(swiftTris: SwiftTris)
     func gameShapeDidLand(swiftTris: SwiftTris)
     func gameShapeDidMove(swiftTris: SwiftTris)
-    func gamgeShapeDidDrop(swiftTris: SwiftTris)
+    func gameShapeDidDrop(swiftTris: SwiftTris)
     func gameDidLevelUp(swiftTris: SwiftTris)
     
     
@@ -98,7 +98,7 @@ class SwiftTris {
             shape.lowerShapeByOneRow()
         }
         shape.raiseShapeByOneRow()
-        delegate?.gamgeShapeDidDrop(swiftTris: self)
+        delegate?.gameShapeDidDrop(swiftTris: self)
     }
     
     // #5
@@ -187,6 +187,8 @@ class SwiftTris {
     }
     
     func endGame() {
+        score = 0
+        level = 1
         delegate?.gameDidEnd(swiftTris: self)
     }
     
